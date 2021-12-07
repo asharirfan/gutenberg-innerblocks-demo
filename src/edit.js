@@ -1,24 +1,5 @@
-/**
- * Retrieves the translation of text.
- *
- * @see https://developer.wordpress.org/block-editor/packages/packages-i18n/
- */
 import { __ } from '@wordpress/i18n';
-
-/**
- * React hook that is used to mark the block wrapper element.
- * It provides all the necessary props like the class name.
- *
- * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
- */
-import { useBlockProps } from '@wordpress/block-editor';
-
-/**
- * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
- * Those files can contain any CSS code that gets applied to the editor.
- *
- * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
- */
+import { InnerBlocks, RichText, useBlockProps } from '@wordpress/block-editor';
 import './editor.scss';
 
 /**
@@ -29,10 +10,32 @@ import './editor.scss';
  *
  * @return {WPElement} Element to render.
  */
-export default function Edit() {
+export default function Edit( props ) {
+	const { attributes: { heading }, setAttributes } = props;
+
 	return (
-		<p {...useBlockProps()}>
-			{__('Todo List – hello from the editor!', 'todo-list')}
-		</p>
+		<div {...useBlockProps()}>
+			<p>
+				<RichText
+					allowedFormats={ [] }
+					aria-label={ __( 'Heading text', 'wdsx' ) }
+					identifier="heading"
+					onChange={ ( newHeading ) => {
+						setAttributes( { heading: newHeading } );
+					} }
+					placeholder={ __( 'Heading of your list', 'wdsx' ) }
+					tagName="h2"
+					value={ heading }
+				/>
+			</p>
+			<p>
+				<InnerBlocks
+					allowedBlocks={ [
+						'create-block/todo-item',
+					] }
+					template={ [ [ 'create-block/todo-item' ] ] }
+				/>
+			</p>
+		</div>
 	);
 }
